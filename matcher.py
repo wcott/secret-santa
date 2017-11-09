@@ -47,8 +47,8 @@ def send_mail(people):
             print "sent mail to {0}".format(person['email'])
     except:
         print "error occurred while sending mail"
-        print "Gifter: %s".format(person['name'])
-        print "Giftee: %s".format(person['partner']['name'])
+        print "Gifter: {0}".format(person['name'])
+        print "Giftee: {0}".format(person['partner']['name'])
         server.quit()
     finally:
         server.quit()
