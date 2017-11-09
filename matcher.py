@@ -8,6 +8,9 @@ from pprint import pprint
 NA = list()
 EU = list()
 INTL = list()
+# DON'T FORGET TO SET THESE!
+FROMADDR = ""
+PASSWORD = ""
 EMAIL_BODY = "Hello {4},\n\n" \
              "I'm contacting  you because you volunteered to be a part of our " \
              "secret santa. Here's all the information you need about the " \
@@ -33,17 +36,22 @@ def generate_pairs(people):
     return paired
 
 def send_mail(people):
-    for person in people:
-        partner = person['partner']
-        #email = MIMEText(EMAIL_BODY.format(partner['name'], partner['discord'], partner['address'], partner['gifts']))
-        print EMAIL_BODY.format(partner['name'].title(), partner['discord'],
-        partner['address'], partner['gift'], person['name'].title() ,partner["email"])
-        #email['From'] = 'sdubist@gmail.com'
-        #email['To'] = person['email']
-        #email['Subject'] = "Minipainting Discord Secret Santa!"
-        #s = smtplib.SMTP('localhost')
-        #s.sendmail(email)
-        #s.quit
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(FROMADDR, PASSWORD)
+    try:
+        for person in people:
+            partner = person['partner']
+            msg = EMAIL_BODY.format(partner['name'], partner['discord'], partner['address'], partner['gift'], person['name'], partner['email'])
+            server.sendmail(FROMADDR, person['email'], msg)
+            print "sent mail to {0}".format(person['email'])
+    except:
+        print "error occurred while sending mail"
+        print "Gifter: %s".format(person['name'])
+        print "Giftee: %s".format(person['partner']['name'])
+        server.quit()
+    finally:
+        server.quit()
 
 with open('responses.tsv') as f:
     lines = f.readlines()
@@ -71,5 +79,7 @@ random.shuffle(INTL)
 NA_PAIRED = generate_pairs(NA)
 EU_PAIRED = generate_pairs(EU)
 INTL_PAIRED = generate_pairs(INTL)
-
 send_mail(NA_PAIRED)
+send_mail(EU_PAIRED)
+send_mail(INTL_PAIRED)
+
